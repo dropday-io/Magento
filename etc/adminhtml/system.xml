@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Config:etc/system_file.xsd">
+	<system>
+		<tab id="dropday" translate="label" sortOrder="999">
+			<label>Dropday</label>
+		</tab>
+		<section id="dropday" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+			<label>Order Automation</label>
+			<tab>dropday</tab>
+			<resource>Dropday_OrderAutomation::config_dropday_orderautomation</resource>
+			<group id="order_automation" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+				<label>General settings</label>
+				<field id="enabled" type="select" sortOrder="10" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Enabled</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="test_mode" type="select" sortOrder="20" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Test Mode</label>
+					<source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+				</field>
+				<field id="account_id" type="text" sortOrder="30" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>Account ID</label>
+					<comment><![CDATA[Get your account details from
+						<a target="_blank" href="https://dropday.io/register">Dropday.io website</a>]]>
+					</comment>
+				</field>
+				<field id="api_key" type="text" sortOrder="40" showInWebsite="1" showInStore="1" showInDefault="1" translate="label">
+					<label>API Key</label>
+				</field>
+			</group>
+		</section>
+	</system>
+</config>
