@@ -145,17 +145,20 @@ class Data extends AbstractHelper
             ],
             'products' => []
         ];
-
+        $skus = [];
         foreach ($order->getAllVisibleItems() as $item) {
-            $params['products'][] = [
-                'external_id' => $item->getProduct()->getId(),
-                'name' => $item->getProduct()->getName(),
-                'reference' => $item->getSku(),
-                'quantity' => (int)$item->getQtyOrdered(),
-                'price' => (float)$item->getPrice(),
-                'image_url' => $this->productHelper->getImageUrl($item->getProduct()),
-                'category' => $this->getCategoryName($item->getProduct()),
-            ];
+            if (!in_array($item->getSku(), $skus)) {
+                $skus[] = $item->getSku();
+                $params['products'][] = [
+                    'external_id' => $item->getProduct()->getId(),
+                    'name' => $item->getProduct()->getName(),
+                    'reference' => $item->getSku(),
+                    'quantity' => (int)$item->getQtyOrdered(),
+                    'price' => (float)$item->getPrice(),
+                    'image_url' => $this->productHelper->getImageUrl($item->getProduct()),
+                    'category' => $this->getCategoryName($item->getProduct()),
+                ];
+            }
         }
         return $params;
     }
