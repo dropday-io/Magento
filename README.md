@@ -3,7 +3,7 @@ Dropday Order Automation module
 
 ## How to install the extension?
 
-* Download the .zip or tar.gz file from gitlab repository.
+* Download the .zip or tar.gz file from GitHub repository.
 * Unzip the file and follow the instructions.
 * Navigate to `Magento` `[Magento]/app/code/` either through `SFTP` or `SSH`
 * Create a folder ```mkdir -p Dropday/OrderAutomation``` and execute the following commands:
