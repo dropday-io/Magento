@@ -20,10 +20,13 @@ Dropday Order Automation module
 * Run the `Magento` Dependencies Injection Compile:
 ```php bin/magento setup:di:compile```
 * Run the `Magento` cache clean commands:
-```php bin/magento cache:clean```
-```php bin/magento cache:flush```
+
+    ```php bin/magento cache:clean```
+
+    ```php bin/magento cache:flush```
 
 If your Magento is running in production mode then just run the following command:
+
 ```php bin/magento deploy:mode:set production```
 
 ## Configuration
