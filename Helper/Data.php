@@ -90,7 +90,7 @@ class Data extends AbstractHelper
      */
     public function isEnabled()
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_ENABLED);
+        return $this->scopeConfig->getValue(self::XML_PATH_ENABLED);
     }
 
     /**
@@ -98,7 +98,7 @@ class Data extends AbstractHelper
      */
     public function isTestMode()
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_TEST);
+        return $this->scopeConfig->getValue(self::XML_PATH_TEST);
     }
 
     /**
