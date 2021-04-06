@@ -127,7 +127,7 @@ class Data extends AbstractHelper
         $address = $order->getShippingAddress();
         $params = [
             'external_id' => $order->getIncrementId(),
-            'source' => $this->scopeConfig->getValue('general/store_information/name'),
+            'source' => $this->getStoreName(),
             'test' => $this->isTestMode(),
             'total' => number_format($order->getGrandTotal(), 2),
             'shipping_cost' => number_format($order->getShippingAmount(), 2),
@@ -171,5 +171,14 @@ class Data extends AbstractHelper
         foreach ($ids as $id) {
             return $this->categoryRepository->get($id)->getName();
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function getStoreName()
+    {
+        return $this->scopeConfig->getValue('general/store_information/name')
+            ? $this->scopeConfig->getValue('general/store_information/name'): 'Magento';
     }
 }
