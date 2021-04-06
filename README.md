@@ -5,10 +5,14 @@ Dropday Order Automation module
 
 * Download the .zip or tar.gz file from gitlab repository.
 * Unzip the file and follow the instructions.
-* Navigate to `Magento` `[Magento]/app/code/` either through `SFTP` or `SSH`.
-* Upload `Dropday/OrderAutomation` directory with the extension.
-* Open the terminal and navigate to Magento root directory.
-
+* Navigate to `Magento` `[Magento]/app/code/` either through `SFTP` or `SSH`
+* Create a folder ```mkdir -p Dropday/OrderAutomation``` and execute the following commands:
+ 
+    ```cd Dropday/OrderAutomation```
+    
+    ```git clone https://github.com/dropday-io/Magento.git .```
+ 
+* Navigate to `Magento` root directory
 * Run the following command to enable Dropday extension:
 ```php bin/magento module:enable Dropday_OrderAutomation```
 * Run the `Magento` setup upgrade:

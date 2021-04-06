@@ -61,6 +61,9 @@ class OrderPlaceAfter implements ObserverInterface
             $client->setUri($this->helper->getBaseUrl() . '/orders');
             $client->setMethod(\Zend_Http_Client::POST);
             $client->setParameterPost($this->helper->getOrderRequestData($order));
+            if ($this->helper->isTestMode()) {
+                $this->logger->info('Dropday Request: ' . print_r($this->helper->getOrderRequestData($order), true));
+            }
             $response = $this->json->unserialize($client->request()->getBody());
             $statusCode = $client->request()->getStatus();
             if (isset($response['reference'])) {
