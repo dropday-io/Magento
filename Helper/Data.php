@@ -90,7 +90,7 @@ class Data extends AbstractHelper
      */
     public function isEnabled()
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_ENABLED);
+        return $this->scopeConfig->getValue(self::XML_PATH_ENABLED);
     }
 
     /**
@@ -98,7 +98,7 @@ class Data extends AbstractHelper
      */
     public function isTestMode()
     {
-        return $this->scopeConfig->isSetFlag(self::XML_PATH_TEST);
+        return $this->scopeConfig->getValue(self::XML_PATH_TEST);
     }
 
     /**
@@ -145,17 +145,20 @@ class Data extends AbstractHelper
             ],
             'products' => []
         ];
-
+        $skus = [];
         foreach ($order->getAllVisibleItems() as $item) {
-            $params['products'][] = [
-                'external_id' => $item->getProduct()->getId(),
-                'name' => $item->getProduct()->getName(),
-                'reference' => $item->getSku(),
-                'quantity' => (int)$item->getQtyOrdered(),
-                'price' => (float)$item->getPrice(),
-                'image_url' => $this->productHelper->getImageUrl($item->getProduct()),
-                'category' => $this->getCategoryName($item->getProduct()),
-            ];
+            if (!in_array($item->getSku(), $skus)) {
+                $skus[] = $item->getSku();
+                $params['products'][] = [
+                    'external_id' => $item->getProduct()->getId(),
+                    'name' => $item->getProduct()->getName(),
+                    'reference' => $item->getSku(),
+                    'quantity' => (int)$item->getQtyOrdered(),
+                    'price' => (float)$item->getPrice(),
+                    'image_url' => $this->productHelper->getImageUrl($item->getProduct()),
+                    'category' => $this->getCategoryName($item->getProduct()),
+                ];
+            }
         }
         return $params;
     }
