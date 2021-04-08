@@ -1,4 +1,4 @@
-Dropday Order Automation module
+Magento Extension for Dropday
 ===============
 
 ## How to install the extension?
