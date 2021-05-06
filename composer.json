@@ -1,6 +1,7 @@
 {
     "name": "dropday/module-orderautomation",
     "description": "Dropday Order Automation",
+    "version": "1.0.0",
     "type": "magento2-module",
     "minimum-stability": "dev",
     "require": {},
