@@ -1,5 +1,5 @@
 {
-    "name": "dropday/module-orderautomation",
+    "name": "dropday-io/module-orderautomation",
     "description": "Intergration for Dropday. Order automation; dropshipping and supplier automation",
     "type": "magento2-module",
     "license": "MIT",
