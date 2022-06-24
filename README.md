@@ -3,23 +3,23 @@ Magento Extension for Dropday
 
 ## How to install the extension?
 
-* Download the .zip or tar.gz file from GitHub repository.
-* Unzip the file and follow the instructions.
-* Navigate to `Magento` `[Magento]/app/code/` either through `SFTP` or `SSH`
-* Create a folder ```mkdir -p Dropday/OrderAutomation``` and execute the following commands:
+* Execute the following commands using `SSH`:
 
-    ```cd Dropday/OrderAutomation```
+    ```cd app/code```
 
-    ```git clone https://github.com/dropday-io/Magento.git .```
+    ```mkdir Dropday```
 
-* Navigate to `Magento` root directory
-* Run the following command to enable Dropday extension:
-```php bin/magento module:enable Dropday_OrderAutomation```
-* Run the `Magento` setup upgrade:
-```php bin/magento setup:upgrade```
-* Run the `Magento` Dependencies Injection Compile:
-```php bin/magento setup:di:compile```
-* Run the `Magento` cache clean commands:
+    ```cd Dropday```
+
+    ```git clone https://github.com/dropday-io/Magento.git OrderAutomation```
+
+    ```cd ../../..```
+
+    ```php bin/magento setup:upgrade```
+
+    ```php bin/magento setup:di:compile```
+
+    ```php bin/magento setup:static-content:deploy```
 
     ```php bin/magento cache:clean```
 
