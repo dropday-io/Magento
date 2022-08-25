@@ -3,6 +3,7 @@
     "description": "Intergration for Dropday. Order automation; dropshipping and supplier automation",
     "type": "magento2-module",
     "license": "MIT",
+    "version": "1.0.1",
     "minimum-stability": "dev",
     "require": {},
     "autoload": {
