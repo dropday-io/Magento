@@ -1,33 +1,17 @@
 Magento Extension for Dropday
 ===============
 
+Dropday.io is a service to automate your webshop orders. With Dropday.io you can forward orders automatically to your suppliers via different methods, for example by placing a XML file on FTP, sending an email or letting a Dropday employee place a manual order on another webshop. This solution is ideal for dropshipping, fulfillment or other types or supplier automation.
+
+This extension will connect to the API and forward your orders to Dropday.io. To connect to the API make an account at [Dropday.io](https://dropday.io/register).
+
 ## How to install the extension?
 
-* Execute the following commands using `SSH`:
+Installion via Composer:
 
-    ```cd app/code```
-
-    ```mkdir Dropday```
-
-    ```cd Dropday```
-
-    ```git clone https://github.com/dropday-io/Magento.git OrderAutomation```
-
-    ```cd ../../..```
-
-    ```php bin/magento setup:upgrade```
-
-    ```php bin/magento setup:di:compile```
-
-    ```php bin/magento setup:static-content:deploy```
-
-    ```php bin/magento cache:clean```
-
-    ```php bin/magento cache:flush```
-
-If your Magento is running in production mode then just run the following command:
-
-```php bin/magento deploy:mode:set production```
+```
+composer require dropday-io/module-orderautomation
+```
 
 ## Configuration
 
