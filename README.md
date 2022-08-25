@@ -7,13 +7,21 @@ This extension will connect to the API and forward your orders to Dropday.io. To
 
 ## How to install the extension?
 
-Installion via Composer:
+### 1. Installion via Composer
 
 ```
 composer require dropday-io/module-orderautomation
 ```
 
-## Configuration
+### 2. Enable
+
+```
+php bin/magento module:enable Dropday_OrderAutomation
+php bin/magento setup:upgrade
+php bin/magento cache:clean
+```
+
+### 3. Configure
 
 Stores &rarr; Configuration &rarr; Dropday &rarr; Order Automation
 
