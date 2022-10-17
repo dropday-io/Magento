@@ -139,6 +139,7 @@ class Data extends AbstractHelper
                 'address1' => $address->getStreetLine(1),
                 'address2' => $address->getStreetLine(2),
                 'postcode' => $address->getPostcode(),
+                'state' => $address->getRegion(),
                 'city' => $address->getCity(),
                 'country' => $address->getCountryId(),
                 'phone' => $address->getTelephone()
