@@ -129,7 +129,7 @@ class Data extends AbstractHelper
             'external_id' => $order->getIncrementId(),
             'source' => $this->getStoreName(),
             'test' => $this->isTestMode(),
-            'total' => number_format($order->getGrandTotal(), 2),
+            'total' => $order->getGrandTotal(),
             'shipping_cost' => number_format($order->getShippingAmount(), 2),
             'email' => $order->getCustomerEmail(),
             'shipping_address' => [
