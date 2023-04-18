@@ -49,6 +49,12 @@ class OrderPlaceAfter implements ObserverInterface
     {
         /** @var Order $order */
         $order = $observer->getEvent()->getOrder();
+        
+        // Check if the order is paid
+        if($order->getState() !== Order::STATE_PROCESSING) {
+            return;
+        }
+
         try {
             if (!$this->helper->isEnabled()) {
                 return;
