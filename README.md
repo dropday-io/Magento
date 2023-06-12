@@ -30,3 +30,9 @@ Stores &rarr; Configuration &rarr; Dropday &rarr; Order Automation
    - Test Mode - Enable Test mode
    - Account ID - Account ID from Dropday Dashboard
    - API Key - Secret Key be provided by Dropday Dashboard
+
+
+
+`docker-compose.yml`:
+
+- './:/bitnami/magento/htdocs/app/code/Dropday'
