@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   magento:
-    image: alexcheng/magento2
+    image: markoshust/magento-php
     ports:
       - "80:80"
     volumes:

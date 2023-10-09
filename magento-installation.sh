@@ -7,7 +7,7 @@ echo "Waiting for the $IMAGE_NAME container to be ready..."
 
 while true; do
     # Get the container ID based on the image name
-    CONTAINER_ID=$(docker ps | grep magento2 | awk '{print $1}')
+    CONTAINER_ID=$(docker ps | grep magento | awk '{print $1}')
     
     if [[ -z "$CONTAINER_ID" ]]; then
         echo "Container with image $IMAGE_NAME is not yet started. Waiting..."
@@ -58,7 +58,11 @@ while true; do
             && php bin/magento cache:flush \
             && chown -R www-data:www-data ."
         
-        break
+        # docker exec $CONTAINER_ID sh -c "php /var/www/html/app/code/Dropday/OrderAutomation/createProduct.php"
+        # docker exec $CONTAINER_ID sh -c "php /var/www/html/app/code/Dropday/OrderAutomation/createCustomer.php"
+        # docker exec $CONTAINER_ID sh -c "php bin/magento config:set payment/checkmo/active 1"
+
+        exit 0
     else
         echo "Waiting for container $CONTAINER_ID to start..."
         sleep 2
