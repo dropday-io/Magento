@@ -3,6 +3,7 @@ version: '2'
 services:
   mariadb:
     image: docker.io/bitnami/mariadb:10.6
+    platform: linux/arm64/v8
     environment:
       # ALLOW_EMPTY_PASSWORD is recommended only for development.
       - ALLOW_EMPTY_PASSWORD=yes
@@ -12,6 +13,7 @@ services:
       - 'mariadb_data:/bitnami/mariadb'
   magento:
     image: docker.io/bitnami/magento:2
+    platform: linux/arm64/v8
     ports:
       - '80:8080'
       - '443:8443'
@@ -32,6 +34,7 @@ services:
       - elasticsearch
   elasticsearch:
     image: docker.io/bitnami/elasticsearch:7
+    platform: linux/arm64/v8
     volumes:
       - 'elasticsearch_data:/bitnami/elasticsearch/data'
 volumes:
