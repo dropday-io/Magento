@@ -8,6 +8,7 @@ services:
     volumes:
       - magento-app:/var/www/html
       - ./:/var/www/html/app/code/Dropday/OrderAutomation
+      - /var/www/html/app/code/Dropday/OrderAutomation/.git
     environment:
       - MAGENTO_HOST_NAME=magento.local
       - MAGENTO_BACKEND_FRONTNAME=admin
