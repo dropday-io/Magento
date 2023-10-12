@@ -1,0 +1,47 @@
+version: '3.7'
+
+services:
+  magento:
+    image: markoshust/magento-php
+    ports:
+      - "80:80"
+    volumes:
+      - magento-app:/var/www/html
+      - ./:/var/www/html/app/code/Dropday/OrderAutomation
+      - /var/www/html/app/code/Dropday/OrderAutomation/.git
+    environment:
+      - MAGENTO_HOST_NAME=magento.local
+      - MAGENTO_BACKEND_FRONTNAME=admin
+      - MAGENTO_SETUP_DB_HOST=db
+      - MAGENTO_SETUP_DB_NAME=magento
+      - MAGENTO_SETUP_DB_USER=magento
+      - MAGENTO_SETUP_DB_PASSWORD=magento
+      - MAGENTO_USE_REDIS=default
+      - MAGENTO_USE_REDIS_CACHE=default
+      - MAGENTO_USE_REDIS_FULL_PAGE_CACHE=default
+      - MAGENTO_USE_REDIS_SESSION=default
+      - MAGENTO_REDIS_HOST=redis
+      - INSTALL_EXTENSION_FROM_GITHUB=https://github.com/dropday-io/Magento.git
+    depends_on:
+      - db
+      - redis
+    mem_limit: 512M
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpassword
+      - MYSQL_DATABASE=magento
+      - MYSQL_USER=magento
+      - MYSQL_PASSWORD=magento
+
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+volumes:
+  magento-app:
+  mysql-data:
