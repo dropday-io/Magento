@@ -1,35 +1,31 @@
 Magento Extension for Dropday
 ===============
 
-**Setting Up Your Magento Environment
-**
-**Starting Services:
-**
-Initiate your Docker containers by executing the following command:
+Create a directory on your system
 
-docker-compose up -d
+sudo mkdir sites
 
-Verifying Container Names:
+cd sites
 
-After initiating the containers, it's recommended to confirm their names. You can list the active containers using:
+Please run this Command to execute scripts and docker
 
-docker ps
+curl -s https://raw.githubusercontent.com/devopsoptimbytes/docker-magento/master/lib/onelinesetup | bash -s -- magento.test 2.4.6-p2 community\n
 
-Admin User Setup:
+In the process it will ask for credentails for repo.magento.com
 
-Before you proceed, ensure that you modify the container name in the script to match the actual name of your Magento container. Once done, execute the password setup 
-script:
+username: 217ab4e2c17a820d861e3f917785e066
+password:  0497283a6f53ed3c3358752151ff2bfc
 
-sh password.sh
+After completion create credetials of magento dashboard with below command
 
-Accessing the Admin Dashboard:
 
-You can access the Magento admin dashboard by navigating to:
+bin/magento admin:user:create --admin-user='username' --admin-password='password123' --admin-email='user@example.com' --admin-firstname='FirstName'
+--admin-lastname='LastName'\n
 
-localhost/admin
+After creation user run below commadn so that disable module.
 
-Installing Dropday Extension:
 
-To add the Dropday extension to your Magento setup, run the following script:
+bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth Magento_TwoFactorAuth\n
 
-sh install-dropday.sh
+
+you can acccess dashboard on browser magento.test/admin
