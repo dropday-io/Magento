@@ -12,7 +12,7 @@ services:
     volumes:
       - 'mariadb_data:/bitnami/mariadb'
   magento:
-    image: alexcheng/magento2
+    image: bitnami/magento:latest
     platform: linux/arm64/v8
     ports:
       - '80:8080'
