@@ -30,3 +30,30 @@ Stores &rarr; Configuration &rarr; Dropday &rarr; Order Automation
    - Test Mode - Enable Test mode
    - Account ID - Account ID from Dropday Dashboard
    - API Key - Secret Key be provided by Dropday Dashboard
+
+
+
+
+Setup by Docker
+===============
+
+
+```
+docker-compose up -d 
+```
+
+It will take some time to deploy the setup in contaier
+
+### Setup magento password
+
+```
+sh password.sh 
+```
+
+### To install extension 
+
+```
+sh install-dropday.sh 
+```
+
+
