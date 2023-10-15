@@ -17,7 +17,7 @@ composer global config http-basic.repo.magento.com \"$USERNAME\" \"$PASSWORD\"
 cd /bitnami/magento/
 
 # Use composer to install the Dropday extension
-composer require dropday/magento2-extension
+composer require dropday-io/module-orderautomation
 
 # Run Magento commands to setup and compile the extension
 bin/magento setup:upgrade
