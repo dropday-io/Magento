@@ -30,3 +30,27 @@ Stores &rarr; Configuration &rarr; Dropday &rarr; Order Automation
    - Test Mode - Enable Test mode
    - Account ID - Account ID from Dropday Dashboard
    - API Key - Secret Key be provided by Dropday Dashboard
+
+## How to contribute
+
+1. Install Magento
+
+```
+curl -s https://raw.githubusercontent.com/markshust/docker-magento/master/lib/onelinesetup | bash -s -- magento.test 2.4.6-p2 community
+```
+   Wait for this process to finish.
+
+   _Credits @markshust_
+
+2. 
+
+```
+mkdir -p src/app/code/Dropday/OrderAutomation
+gh repo clone dropday-io/Magento src/app/code/Dropday/OrderAutomation # Make sure you have installed GitHub CLI, if not use Git CLI
+bin/magento module:enable Dropday_OrderAutomation
+bin/magento setup:upgrade
+bin/magento cache:clean
+bin/magento module:disable Magento_AdminAdobeImsTwoFactorAuth
+bin/magento module:disable Magento_TwoFactorAuth
+cd src/app/code/Dropday/OrderAutomation # You're in the module's repo now. Make changes, test it and make a PR!
+```
