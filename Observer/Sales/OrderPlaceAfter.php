@@ -89,7 +89,7 @@ class OrderPlaceAfter implements ObserverInterface
                 $order->addCommentToStatusHistory('Dropday API Success (' . $statusCode . ') ' . $response['message']);
             } else {
                 // Add error comment to order
-                $order->addCommentToStatusHistory('Dropday API Error: (' . $statusCode . ') ' . $response['message']);
+                $order->addCommentToStatusHistory('Dropday API Error: (' . $statusCode . ') ' . json_encode($response));
             }
         } catch (\Exception $e) {
             // Log critical errors
