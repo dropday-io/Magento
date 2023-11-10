@@ -6,8 +6,8 @@ use Dropday\OrderAutomation\Helper\Data;
 use Magento\Framework\Event\Observer;
 use Magento\Framework\Event\ObserverInterface;
 use Magento\Framework\Serialize\Serializer\Json;
-use Magento\Sales\Model\Order;
 use Psr\Log\LoggerInterface;
+use Magento\Sales\Api\OrderRepositoryInterface;
 
 class OrderPlaceAfter implements ObserverInterface
 {
@@ -33,48 +33,66 @@ class OrderPlaceAfter implements ObserverInterface
     public function __construct(
         Data $helper,
         Json $json,
-        LoggerInterface $logger
+        LoggerInterface $logger,
+        OrderRepositoryInterface $orderRepository
     ) {
         $this->helper = $helper;
         $this->json = $json;
         $this->logger = $logger;
+        $this->orderRepository = $orderRepository;
     }
 
     /**
      * Execute observer
      *
      * @param Observer $observer
+     * @throws \Magento\Framework\Exception\LocalizedException
      */
     public function execute(Observer $observer)
     {
-        /** @var Order $order */
+        /** @var \Magento\Sales\Model\Order $order */
         $order = $observer->getEvent()->getOrder();
+
         try {
             if (!$this->helper->isEnabled()) {
                 return;
             }
+
+            // Additional checks for account ID and API key
             if (!$this->helper->getAccountId() || !$this->helper->getApiKey()) {
                 $this->logger->warning('Dropday Automation: Missing Account ID or API Key in system configuration!');
                 return;
             }
+
             $client = $this->helper->getClient();
-            $client->setUri($this->helper->getBaseUrl() . '/orders');
-            $client->setMethod(\Zend_Http_Client::POST);
-            $client->setParameterPost($this->helper->getOrderRequestData($order));
+            $postData = $this->helper->getOrderRequestData($order);
+
+            // POST request to the API
+            $client->post($this->helper->getBaseUrl() . '/orders', json_encode($postData));
+
+            // Logging for test mode
             if ($this->helper->isTestMode()) {
-                $this->logger->info('Dropday Request: ' . print_r($this->helper->getOrderRequestData($order), true));
+                $this->logger->info('Dropday Request: ' . json_encode($postData));
             }
-            $response = $this->json->unserialize($client->request()->getBody());
-            $statusCode = $client->request()->getStatus();
-            if (isset($response['reference'])) {
+
+            // Handling the response
+            $responseBody = $client->getBody();
+            $response = $this->json->unserialize($responseBody);
+            $statusCode = $client->getStatus();
+
+            if ($statusCode == 200 && isset($response['reference'])) {
+                // Update order data and save
                 $order->setData('dropday_order_id', $response['reference']);
-                $order->save();
-                $order->addCommentToStatusHistory('Dropday API Success (' . $statusCode . ') ' . $response['message']);
-            }
-            if ($statusCode != 200) {
-                $order->addCommentToStatusHistory('Dropday API Error: (' . $statusCode . ') ' . $response['message']);
+                $this->orderRepository->save($order);
+
+                // Add order comment
+                $order->addCommentToStatusHistory('Dropday order-ID: ' . $response['reference']);
+            } else {
+                // Add error comment to order
+                $order->addCommentToStatusHistory('Dropday API Error: (' . $statusCode . ') ' . json_encode($response));
             }
         } catch (\Exception $e) {
+            // Log critical errors
             $this->logger->critical('Dropday Automation: ' . $e->getMessage());
         }
     }

@@ -8,11 +8,8 @@ use Magento\Framework\App\Helper\AbstractHelper;
 use Magento\Framework\App\Helper\Context;
 use Magento\Framework\Exception\NoSuchEntityException;
 use Magento\Framework\HTTP\Client\Curl;
-use Magento\Framework\HTTP\ZendClient;
-use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Sales\Model\Order;
-use Zend_Http_Client;
-use Zend_Http_Client_Exception;
+use Magento\Framework\HTTP\Client\CurlFactory;
 
 class Data extends AbstractHelper
 {
@@ -24,14 +21,6 @@ class Data extends AbstractHelper
     const BASE_URL = 'https://dropday.io/api/v1';
 
     /**
-     * @var Curl
-     */
-    private $curl;
-    /**
-     * @var ZendClient
-     */
-    private $client;
-    /**
      * @var Product
      */
     private $productHelper;
@@ -39,41 +28,41 @@ class Data extends AbstractHelper
      * @var CategoryRepository
      */
     private $categoryRepository;
+    /**
+     * @var CurlFactory
+     */
+    private $curlFactory;
 
     /**
      * @param Context $context
      * @param Curl $curl
-     * @param ZendClientFactory $client
      * @param Product $productHelper
      * @param CategoryRepository $categoryRepository
      */
     public function __construct(
         Context $context,
-        Curl $curl,
-        ZendClientFactory $client,
         Product $productHelper,
-        CategoryRepository $categoryRepository
+        CategoryRepository $categoryRepository,
+        CurlFactory $curlFactory
     ) {
         parent::__construct($context);
-        $this->curl = $curl;
-        $this->client = $client;
         $this->productHelper = $productHelper;
         $this->categoryRepository = $categoryRepository;
+        $this->curlFactory = $curlFactory;
     }
 
     /**
-     * Initialize ZendClient with headers for authentication
+     * Initialize Magento Curl Client with headers for authentication
      *
-     * @return ZendClient
-     * @throws Zend_Http_Client_Exception
+     * @return \Magento\Framework\HTTP\Client\Curl
      */
     public function getClient()
     {
-        $client = $this->client->create();
-        $client->setHeaders(Zend_Http_Client::CONTENT_TYPE, 'application/json');
-        $client->setHeaders('Accept', 'application/json');
-        $client->setHeaders('account-id', $this->getAccountId());
-        $client->setHeaders('api-key', $this->getApiKey());
+        $client = $this->curlFactory->create();
+        $client->addHeader("Content-Type", "application/json");
+        $client->addHeader("Accept", "application/json");
+        $client->addHeader("account-id", $this->getAccountId());
+        $client->addHeader("api-key", $this->getApiKey());
         return $client;
     }
 
