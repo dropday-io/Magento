@@ -86,7 +86,7 @@ class OrderPlaceAfter implements ObserverInterface
                 $this->orderRepository->save($order);
 
                 // Add order comment
-                $order->addCommentToStatusHistory('Dropday API Success (' . $statusCode . ') ' . $response['message']);
+                $order->addCommentToStatusHistory('Dropday order-ID: ' . $response['reference']);
             } else {
                 // Add error comment to order
                 $order->addCommentToStatusHistory('Dropday API Error: (' . $statusCode . ') ' . json_encode($response));
