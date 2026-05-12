@@ -62,7 +62,7 @@ class OrderPlaceAfter implements ObserverInterface
             $client->setMethod('POST');
             $client->setParameterPost($this->helper->getOrderRequestData($order));
             if ($this->helper->isTestMode()) {
-                $this->logger->info('Dropday Request: ' . print_r($this->helper->getOrderRequestData($order), true));
+                $this->logger->info('Dropday Request: ' . $this->json->serialize($this->helper->getOrderRequestData($order)));
             }
             $response = $this->json->unserialize($client->request()->getBody());
             $statusCode = $client->request()->getStatus();
