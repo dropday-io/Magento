@@ -14,12 +14,12 @@ use Magento\Sales\Model\Order;
 
 class Data extends AbstractHelper
 {
-    const XML_PATH_ENABLED = 'dropday/order_automation/enabled';
-    const XML_PATH_TEST = 'dropday/order_automation/test_mode';
-    const XML_PATH_ACCOUNT_ID = 'dropday/order_automation/account_id';
-    const XML_PATH_API_KEY = 'dropday/order_automation/api_key';
+    public const XML_PATH_ENABLED = 'dropday/order_automation/enabled';
+    public const XML_PATH_TEST = 'dropday/order_automation/test_mode';
+    public const XML_PATH_ACCOUNT_ID = 'dropday/order_automation/account_id';
+    public const XML_PATH_API_KEY = 'dropday/order_automation/api_key';
 
-    const BASE_URL = 'https://dropday.io/api/v1';
+    public const BASE_URL = 'https://dropday.io/api/v1';
 
     /**
      * @var Curl
