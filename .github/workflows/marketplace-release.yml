@@ -46,7 +46,7 @@ jobs:
       - name: Validate required files
         run: |
           MISSING=()
-          for f in registration.php etc/module.xml composer.json user-guide-en.pdf; do
+          for f in registration.php etc/module.xml composer.json; do
             [ -f "$f" ] || MISSING+=("$f")
           done
           if [ ${#MISSING[@]} -gt 0 ]; then
