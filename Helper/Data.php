@@ -11,8 +11,6 @@ use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\HTTP\ZendClient;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Sales\Model\Order;
-use Zend_Http_Client;
-use Zend_Http_Client_Exception;
 
 class Data extends AbstractHelper
 {
@@ -62,15 +60,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Initialize ZendClient with headers for authentication
+     * Initialize HTTP client with authentication headers
      *
      * @return ZendClient
-     * @throws Zend_Http_Client_Exception
+     * @throws \Laminas\Http\Exception\RuntimeException
      */
     public function getClient()
     {
         $client = $this->client->create();
-        $client->setHeaders(Zend_Http_Client::CONTENT_TYPE, 'application/json');
+        $client->setHeaders('Content-Type', 'application/json');
         $client->setHeaders('Accept', 'application/json');
         $client->setHeaders('account-id', $this->getAccountId());
         $client->setHeaders('api-key', $this->getApiKey());
