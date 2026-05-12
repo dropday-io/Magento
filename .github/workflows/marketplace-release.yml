@@ -1,0 +1,135 @@
+name: Marketplace Release
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'etc/module.xml'
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── 1. Extract version from module.xml ───────────────────────────────
+      - name: Extract version from module.xml
+        run: |
+          TAG=$(grep -oP 'setup_version="\K[^"]+' etc/module.xml)
+          if [ -z "$TAG" ]; then
+            echo "::error::Could not extract setup_version from etc/module.xml."
+            exit 1
+          fi
+          if ! echo "$TAG" | grep -qP '^\d+\.\d+\.\d+$'; then
+            echo "::error::setup_version \"$TAG\" is not a valid semver (x.y.z)."
+            exit 1
+          fi
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "✓ Detected version: $TAG"
+
+      # ── 2. Abort if tag already exists ───────────────────────────────────
+      - name: Check tag does not already exist
+        run: |
+          if git ls-remote --tags origin "refs/tags/${TAG}" | grep -q .; then
+            echo "::notice::Tag $TAG already exists — skipping release."
+            echo "SKIP=true" >> "$GITHUB_ENV"
+          else
+            echo "SKIP=false" >> "$GITHUB_ENV"
+          fi
+
+      # ── 3. Validate composer.json has no "version" field ─────────────────
+      - name: Validate composer.json has no version field
+        if: env.SKIP == 'false'
+        run: |
+          if jq -e 'has("version")' composer.json > /dev/null 2>&1; then
+            echo "::error::composer.json must not contain a \"version\" field. Remove it."
+            exit 1
+          fi
+          echo "✓ composer.json has no version field."
+
+      # ── 4. Validate required files exist ─────────────────────────────────
+      - name: Validate required files
+        if: env.SKIP == 'false'
+        run: |
+          MISSING=()
+          for f in registration.php etc/module.xml composer.json user-guide-en.pdf; do
+            [ -f "$f" ] || MISSING+=("$f")
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::The following required files are missing: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "✓ All required files present."
+
+      # ── 5. Create and push Git tag ────────────────────────────────────────
+      - name: Create and push Git tag
+        if: env.SKIP == 'false'
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+          echo "✓ Tag $TAG pushed."
+
+      # ── 6. Build zip ──────────────────────────────────────────────────────
+      - name: Build release zip
+        if: env.SKIP == 'false'
+        run: |
+          ZIP_NAME="dropday-module-orderautomation-${TAG}.zip"
+          zip -r "$ZIP_NAME" . \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".cursor/*" \
+            --exclude "tests/*" \
+            --exclude "docker-compose*" \
+            --exclude ".env*" \
+            --exclude "*.DS_Store"
+          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
+          echo "✓ Created $ZIP_NAME"
+
+      # ── 7. Verify zip structure ───────────────────────────────────────────
+      - name: Verify zip structure
+        if: env.SKIP == 'false'
+        run: |
+          INSPECT_DIR=$(mktemp -d)
+          unzip -q "$ZIP_NAME" -d "$INSPECT_DIR"
+          if [ ! -f "$INSPECT_DIR/registration.php" ]; then
+            echo "::error::registration.php is not at the root of the zip. Check for nested subfolders."
+            exit 1
+          fi
+          echo "✓ registration.php is at root level in the zip."
+
+      # ── 8. Generate release notes ─────────────────────────────────────────
+      - name: Generate release notes
+        if: env.SKIP == 'false'
+        run: |
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${TAG}$" | head -n 1)
+          if [ -n "$PREV_TAG" ]; then
+            echo "Changelog from $PREV_TAG to $TAG:" > release-notes.txt
+            git log "${PREV_TAG}..${TAG}" --pretty=format:"- %s" >> release-notes.txt
+          else
+            echo "Initial release $TAG:" > release-notes.txt
+            git log "${TAG}" --pretty=format:"- %s" >> release-notes.txt
+          fi
+          echo "" >> release-notes.txt
+          echo "✓ Release notes written:"
+          cat release-notes.txt
+
+      # ── 9. Create GitHub Release ──────────────────────────────────────────
+      - name: Create GitHub Release
+        if: env.SKIP == 'false'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          body_path: release-notes.txt
+          files: |
+            ${{ env.ZIP_NAME }}
+            release-notes.txt
