@@ -1,0 +1,128 @@
+name: Marketplace Release
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  release:
+    name: Build & Publish Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # ── 1. Validate composer.json has no "version" field ──────────────────
+      - name: Validate composer.json has no version field
+        run: |
+          if jq -e 'has("version")' composer.json > /dev/null 2>&1; then
+            echo "::error::composer.json must not contain a \"version\" field. Remove it and re-tag."
+            exit 1
+          fi
+          echo "✓ composer.json has no version field."
+
+      # ── 2. Validate etc/module.xml setup_version matches tag ─────────────
+      - name: Validate module.xml setup_version
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          if [ ! -f "etc/module.xml" ]; then
+            echo "::error::etc/module.xml not found."
+            exit 1
+          fi
+          MODULE_VERSION=$(grep -oP 'setup_version="\K[^"]+' etc/module.xml)
+          if [ "$MODULE_VERSION" != "$TAG" ]; then
+            echo "::error::setup_version in etc/module.xml (\"$MODULE_VERSION\") does not match tag (\"$TAG\"). Update the attribute and re-tag."
+            exit 1
+          fi
+          echo "✓ setup_version matches tag: $TAG"
+
+      # ── 3. Validate required files exist ─────────────────────────────────
+      - name: Validate required files
+        run: |
+          MISSING=()
+          for f in registration.php etc/module.xml composer.json user-guide-en.pdf; do
+            [ -f "$f" ] || MISSING+=("$f")
+          done
+          if [ ${#MISSING[@]} -gt 0 ]; then
+            echo "::error::The following required files are missing: ${MISSING[*]}"
+            exit 1
+          fi
+          echo "✓ All required files present."
+
+      # ── 4. Build zip ──────────────────────────────────────────────────────
+      - name: Build release zip
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          ZIP_NAME="dropday-module-orderautomation-${TAG}.zip"
+          zip -r "$ZIP_NAME" . \
+            --exclude ".git/*" \
+            --exclude ".github/*" \
+            --exclude ".cursor/*" \
+            --exclude "tests/*" \
+            --exclude "docker-compose*" \
+            --exclude ".env*" \
+            --exclude "*.DS_Store"
+          echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
+          echo "✓ Created $ZIP_NAME"
+
+      # ── 5. Verify zip structure ───────────────────────────────────────────
+      - name: Verify zip structure
+        run: |
+          INSPECT_DIR=$(mktemp -d)
+          unzip -q "$ZIP_NAME" -d "$INSPECT_DIR"
+          if [ ! -f "$INSPECT_DIR/registration.php" ]; then
+            echo "::error::registration.php is not at the root of the zip. Check for nested subfolders."
+            exit 1
+          fi
+          echo "✓ registration.php is at root level in the zip."
+
+      # ── 6. Trigger Packagist update ───────────────────────────────────────
+      - name: Trigger Packagist update
+        run: |
+          RESPONSE=$(curl -s -o response.json -w "%{http_code}" \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"repository":{"url":"https://github.com/dropday-io/Magento"}}' \
+            "https://packagist.org/api/update-package?username=dropday-io&apiToken=${{ secrets.PACKAGIST_API_TOKEN }}")
+
+          STATUS=$(jq -r '.status // empty' response.json 2>/dev/null)
+
+          if [ "$STATUS" != "success" ]; then
+            echo "::error::Packagist update failed. HTTP $RESPONSE. Response: $(cat response.json)"
+            exit 1
+          fi
+          echo "✓ Packagist updated successfully."
+
+      # ── 7. Generate release notes ─────────────────────────────────────────
+      - name: Generate release notes
+        run: |
+          TAG="${GITHUB_REF_NAME}"
+          PREV_TAG=$(git tag --sort=-version:refname | grep -v "^${TAG}$" | head -n 1)
+
+          if [ -n "$PREV_TAG" ]; then
+            echo "Changelog from $PREV_TAG to $TAG:" > release-notes.txt
+            git log "${PREV_TAG}..${TAG}" --pretty=format:"- %s" >> release-notes.txt
+          else
+            echo "Initial release $TAG:" > release-notes.txt
+            git log "${TAG}" --pretty=format:"- %s" >> release-notes.txt
+          fi
+
+          echo "" >> release-notes.txt
+          echo "✓ Release notes written:"
+          cat release-notes.txt
+
+      # ── 8. Create GitHub Release ──────────────────────────────────────────
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          body_path: release-notes.txt
+          files: |
+            ${{ env.ZIP_NAME }}
+            release-notes.txt
