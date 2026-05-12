@@ -84,6 +84,13 @@ jobs:
         if: env.SKIP == 'false'
         run: |
           ZIP_NAME="dropday-module-orderautomation-${TAG}.zip"
+
+          # Inject version into composer.json for the zip only.
+          # The repo copy stays version-free (Packagist reads from the git tag).
+          # Magento Marketplace requires the field to be present in the archive.
+          cp composer.json composer.json.bak
+          jq --arg v "$TAG" '. + {version: $v}' composer.json.bak > composer.json
+
           zip -r "$ZIP_NAME" . \
             --exclude ".git/*" \
             --exclude ".github/*" \
@@ -91,9 +98,14 @@ jobs:
             --exclude "tests/*" \
             --exclude "docker-compose*" \
             --exclude ".env*" \
-            --exclude "*.DS_Store"
+            --exclude "*.DS_Store" \
+            --exclude "composer.json.bak"
+
+          # Restore the original composer.json (no version field)
+          mv composer.json.bak composer.json
+
           echo "ZIP_NAME=$ZIP_NAME" >> "$GITHUB_ENV"
-          echo "✓ Created $ZIP_NAME"
+          echo "✓ Created $ZIP_NAME with version $TAG injected into composer.json"
 
       # ── 7. Verify zip structure ───────────────────────────────────────────
       - name: Verify zip structure
