@@ -11,17 +11,15 @@ use Magento\Framework\HTTP\Client\Curl;
 use Magento\Framework\HTTP\ZendClient;
 use Magento\Framework\HTTP\ZendClientFactory;
 use Magento\Sales\Model\Order;
-use Zend_Http_Client;
-use Zend_Http_Client_Exception;
 
 class Data extends AbstractHelper
 {
-    const XML_PATH_ENABLED = 'dropday/order_automation/enabled';
-    const XML_PATH_TEST = 'dropday/order_automation/test_mode';
-    const XML_PATH_ACCOUNT_ID = 'dropday/order_automation/account_id';
-    const XML_PATH_API_KEY = 'dropday/order_automation/api_key';
+    public const XML_PATH_ENABLED = 'dropday/order_automation/enabled';
+    public const XML_PATH_TEST = 'dropday/order_automation/test_mode';
+    public const XML_PATH_ACCOUNT_ID = 'dropday/order_automation/account_id';
+    public const XML_PATH_API_KEY = 'dropday/order_automation/api_key';
 
-    const BASE_URL = 'https://dropday.io/api/v1';
+    public const BASE_URL = 'https://dropday.io/api/v1';
 
     /**
      * @var Curl
@@ -62,15 +60,15 @@ class Data extends AbstractHelper
     }
 
     /**
-     * Initialize ZendClient with headers for authentication
+     * Initialize HTTP client with authentication headers
      *
      * @return ZendClient
-     * @throws Zend_Http_Client_Exception
+     * @throws \Laminas\Http\Exception\RuntimeException
      */
     public function getClient()
     {
         $client = $this->client->create();
-        $client->setHeaders(Zend_Http_Client::CONTENT_TYPE, 'application/json');
+        $client->setHeaders('Content-Type', 'application/json');
         $client->setHeaders('Accept', 'application/json');
         $client->setHeaders('account-id', $this->getAccountId());
         $client->setHeaders('api-key', $this->getApiKey());
@@ -78,6 +76,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get base API URL
+     *
      * @return string
      */
     public function getBaseUrl()
@@ -86,6 +86,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Check if the module is enabled
+     *
      * @return bool
      */
     public function isEnabled()
@@ -94,6 +96,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Check if test mode is enabled
+     *
      * @return bool
      */
     public function isTestMode()
@@ -102,6 +106,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get configured account ID
+     *
      * @return string
      */
     public function getAccountId()
@@ -110,6 +116,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get configured API key
+     *
      * @return string
      */
     public function getApiKey()
@@ -118,6 +126,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Build request payload from order data
+     *
      * @param Order $order
      * @return array
      * @throws NoSuchEntityException
@@ -165,7 +175,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $product
+     * Get the first category name for a product
+     *
+     * @param \Magento\Catalog\Model\Product $product
      * @return string|null
      * @throws NoSuchEntityException
      */
@@ -178,7 +190,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return bool
+     * Get store name from configuration
+     *
+     * @return string
      */
     public function getStoreName()
     {
