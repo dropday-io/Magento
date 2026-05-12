@@ -76,6 +76,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get base API URL
+     *
      * @return string
      */
     public function getBaseUrl()
@@ -84,6 +86,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Check if the module is enabled
+     *
      * @return bool
      */
     public function isEnabled()
@@ -92,6 +96,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Check if test mode is enabled
+     *
      * @return bool
      */
     public function isTestMode()
@@ -100,6 +106,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get configured account ID
+     *
      * @return string
      */
     public function getAccountId()
@@ -108,6 +116,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Get configured API key
+     *
      * @return string
      */
     public function getApiKey()
@@ -116,6 +126,8 @@ class Data extends AbstractHelper
     }
 
     /**
+     * Build request payload from order data
+     *
      * @param Order $order
      * @return array
      * @throws NoSuchEntityException
@@ -163,7 +175,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @param $product
+     * Get the first category name for a product
+     *
+     * @param \Magento\Catalog\Model\Product $product
      * @return string|null
      * @throws NoSuchEntityException
      */
@@ -176,7 +190,9 @@ class Data extends AbstractHelper
     }
 
     /**
-     * @return bool
+     * Get store name from configuration
+     *
+     * @return string
      */
     public function getStoreName()
     {
